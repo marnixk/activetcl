@@ -5,63 +5,49 @@ package require mysqltcl
 source "misc.tcl"
 source "dbfunctions.tcl"
 source "dbassocs.tcl"
+source "dbqueries.tcl"
 
-set m [mysql::connect -user root -password r2d2c3po -db tclmysql]
-mysql::use $m tclmysql
 
 
 namespace eval Company {
-
-	table companies
-
+	table "companies"
 }
 
 namespace eval Category {
-
-	table categories
+	table "categories"
 	has games {Game category_id}
-
 }
 
 namespace eval Rating {
-	table ratings
+	table "ratings"
 	belongs-to game game_id {Game id}
 }
 
 namespace eval Game {
-
-	table games
+	table "games"
 	belongs-to category category_id {Category id}
+	belongs-to company company_id {Company id}
 	has ratings {Rating game_id}
 
+	proc latest-games {{top 5}} {
+		return [db'get-results-for Game "SELECT * FROM games ORDER BY updated_at DESC LIMIT $top"]
+	}
+
+	proc hot-games {{top 5}} {
+		return [db'get-results-for Game "SELECT * FROM games WHERE is_hot_game = 1 ORDER BY updated_at DESC LIMIT $top"]
+	}
+
+
 }
 
 
-# array set category [Category::find {:id 7}]
-# set complete_category [db'unfold {games} [array get category] -single]
 
-set category [db'unfold {games} [Category::find {:id 7}] -single]
-puts $category
+db'connect -user root -password r2d2c3po -db tclmysql
 
-set game [Game::find {:id 34}]
-set complete_game [db'unfold {category ratings} $game -single]
+set games [Game::latest-games]
+set all_games [Game::all]
+set specific_game [Game::find {:id 10}]
 
-array set cga $complete_game
-unset category
-array set category $cga(category)
-set ratings $cga(ratings)
+puts [where { {id > 10} {category_id 10} {name "marnix kok"} }]
 
-foreach rating $ratings {
-	array set r $rating
-	parray r
-	puts ""
-}
-
-parray category
-
-# parray game
-# puts "complete game: $complete_game"
-# puts "complete category: $complete_category"
-
-
-mysql::close $m
+db'close

@@ -41,10 +41,8 @@ proc db'unfold-row {assocs row} {
 		}
 
 		array set assoc_arr $map_array($assoc)
-		parray assoc_arr
 
 		eval "set target_table \$${assoc_arr(target)}::table_name"
-		puts "TARGET: $target_table"
 
 		# handle properly
 		set fetch_args [list]
@@ -63,17 +61,14 @@ proc db'unfold-row {assocs row} {
 }
 
 proc db'fetch-has {query ns table id} {
-	global m
 	set merged_query [db'merge-arguments-with-query $query [list :table $table] [list :id $id]]
-	return [db'get-results-for $m $ns $table $merged_query]
+	return [db'get-results-for $ns $merged_query]
 }
 
 proc db'fetch-belongs-to {query ns local_key table row} {
-	global m
-
 	array set row_arr $row
 	eval "set fkey \${${ns}::primary}"
 	set merged_query [db'merge-arguments-with-query $query [list :table $table] [list :id $row_arr($local_key)] [list :foreign_key $fkey]]
 
-	return [db'get-results-for $m $ns $table $merged_query]
+	return [db'get-results-for $ns $merged_query]
 }

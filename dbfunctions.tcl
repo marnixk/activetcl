@@ -20,7 +20,7 @@ proc table {name {primary_key "id"}} {
 
 	foreach {q_name query} $generatedqueries {
 		set fullq [expr $query]
-		db'prepare-query $ns_name $q_name $name $fullq
+		db'prepare-query $ns_name $q_name $fullq
 	}						
 
 }
@@ -70,10 +70,13 @@ proc db'merge-arguments-with-query {query args} {
 	return $query
 }
 
-proc db'get-results-for {db_source namesp table query} {
+proc db'get-results-for {namesp query} {
+	global db_conn
 
-	set cols [mysql::col $db_source $table name]
-	set resultset [mysql::sel $db_source $query -list]
+	eval "set table \${${namesp}::table_name}"
+
+	set cols [mysql::col $db_conn $table name]
+	set resultset [mysql::sel $db_conn $query -list]
 
 	lappend arr_result
 
@@ -92,21 +95,29 @@ proc db'get-results-for {db_source namesp table query} {
 		}
 	}
 
-	puts $arr_result
-
 	return $arr_result
 
 }
 
-proc db'prepare-query {ns name table query} {
-	# puts "registering query $name {$query}" 
+proc db'prepare-query {ns name query} {
 
 	set fullname "${ns}::$name"
 
 	mkproc $fullname {args} {
-		global m
 		set merged_query [db'merge-arguments-with-query "%query%" {*}$args]
-		return [db'get-results-for $m %ns% "%table%" $merged_query]
-	} %name% $name %query% $query %table% $table %ns% $ns
+		return [db'get-results-for %ns% $merged_query]
+	} %name% $name %query% $query %ns% $ns
 
+}
+
+proc db'connect {args} {
+	global db_conn
+
+	set db_conn [mysql::connect {*}$args]
+
+}
+
+proc db'close {} {
+	global db_conn
+	mysql::close $db_conn
 }
