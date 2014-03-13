@@ -51,7 +51,7 @@ namespace eval Game {
 
 
 
-db'connect -user root -password r2d2c3po -db tclmysql
+db'connect -user root -password .. -db tclmysql
 
 set newid [db'save Company {
 	name "new company" 
@@ -61,7 +61,7 @@ set newid [db'save Company {
 
 puts "Added record with id: $newid"
 
-db'delete Company [subst {id $newid}]
+# db'delete Company {id $}
 
 db'save Company {
 	id 17
