@@ -37,7 +37,8 @@ proc select {model info} {
 	}
 
 	if {[info exists info_arr(order)]} then {
-		set orderby "ORDER BY $info_arr(order)"
+		set order [uplevel 1 subst -nocommands [list $info_arr(order)]]
+		set orderby "ORDER BY $order"
 	}
 
 	if {[info exists info_arr(limit)]} then {

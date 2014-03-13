@@ -6,6 +6,7 @@ source "misc.tcl"
 source "dbfunctions.tcl"
 source "dbassocs.tcl"
 source "dbqueries.tcl"
+source "dbpersist.tcl"
 
 
 
@@ -38,9 +39,10 @@ namespace eval Game {
 	}
 
 	named-query hot-games {{top 5}} {
+		set order "updated_at"
 		select Game {
 			where { {is_hot_game 1} }
-			order "updated_at DESC"
+			order "$order DESC"
 			limit $top
 		}
 	}
@@ -51,9 +53,30 @@ namespace eval Game {
 
 db'connect -user root -password r2d2c3po -db tclmysql
 
+set newid [db'save Company {
+	name "new company" 
+	url "http://google.com" 
+	description "Amazing stuff happening in this company, so happy to be working here"
+}]
+
+puts "Added record with id: $newid"
+
+db'delete Company [subst {id $newid}]
+
+db'save Company {
+	id 17
+	name "Updated Unregistered Company" 
+	url "http://google.com" 
+	description "Amazing stuff happening in this company, so happy to be working here"
+}
+
+
+
 # set games [Game::latest-games]
-set all_games [Game::all]
-set specific_game [Game::find {:id 10}]
+# set all_games [Game::all]
+# set specific_game [Game::find {:id 10}]
+
+# puts $specific_game
 
 # set top 20
 # set length 5
@@ -70,7 +93,7 @@ set specific_game [Game::find {:id 10}]
 # 	limit {$top $length}
 # }]
 
-set latest-games [Game::find-hot]
-puts ${latest-games}
+# set latest-games [Game::find-hot-games]
+# puts ${latest-games}
 
 db'close
