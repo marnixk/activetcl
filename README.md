@@ -2,7 +2,7 @@
 
 This module contains some helpful functionality that will help you setup and manage simple database structures easily like you would with the likes of ActiveRecord. 
 
-## Creating models
+#### Creating models
 
 Creating a model is as simple as defining a namespace and called `table`. Like so:
 
@@ -28,11 +28,11 @@ Sometimes you will want to indicate that this record is owned by another model, 
 
 .. where "game" is the name of the association, `game_id` is the field in the current table that is mapped to the `Game` model through the `id` field.
 
-## Retrieving results
+#### Retrieving results
 
 When a table is defined, the namespace automatically gets two methods, `find` and `all`. To retrieve one result by a specific ID in our Company model call: 
 
-    set selected_company [Company::find 10]
+    set selected_company [Company::find {:id 10}]
 
 This will query one record that has that identifier as its primary key, which will be returned as a list that could be fed into `array set` with the column names prefixing the values.
 
@@ -44,12 +44,12 @@ Easy enough!
 
 Information from associations are never loaded up front, to get that information one has to unfold the result, and specify which associations should be loaded. In our `Rating` example, we have a `game` association. Let's load it like this:
 
-    set rating [Rating::find 1]
+    set rating [Rating::find {:id 1}]
     set unfolded_rating [db'unfold {game} $rating]
 
 You will now get returned an array with the original row in the `row` key, and all the requested associations (you can specify more than one) in their equally named keys. 
 
-## Named queries
+#### Named queries
 
 Named queries are an easy way to encapsulate an often executed query in a name. To create a named query, in your model's namespace, put the following:
 
@@ -75,7 +75,7 @@ As you can see there's a simple SELECT-query builder that uses variable substitu
 
     set games [Game::find-hot-games]
 
-## Example
+#### Example
 
 Below you can see a more complete example of a `games` table that belongs to a category, a company, and has one or more ratings. Then, it also has a number of named, parameterized queries that yield one or more results.
 
