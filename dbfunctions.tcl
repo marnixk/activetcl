@@ -1,4 +1,8 @@
 
+proc model {name body} {
+	uplevel 1 namespace eval $name $body
+}
+
 proc table {name {primary_key "id"}} {
 
 	uplevel 1 {

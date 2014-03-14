@@ -54,7 +54,10 @@ proc select {model info} {
 		}
 	}
 
-	return "SELECT $fields FROM $table WHERE $where_clause $orderby $limit"
+	set fullquery "SELECT $fields FROM $table WHERE $where_clause $orderby $limit"
+	log::log notice "constructed query `$fullquery`"
+
+	return $fullquery
 }
 
 proc where {args} {
@@ -88,6 +91,7 @@ proc named-query {name sig body} {
 	mkproc "${current_namespace}::find-$name" $sig {
 		set query [%ns%::%name%]
 		return [db'get-results-for %ns% $query]
-
 	} %ns% $current_namespace %name% $name
+
+	log::log notice "Created named query functions ${current_namespace}::$name and ${current_namespace}::find-$name"
 }

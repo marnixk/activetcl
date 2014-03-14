@@ -6,13 +6,13 @@ This module contains some helpful functionality that will help you setup and man
 
 Creating a model is as simple as defining a namespace and called `table`. Like so:
 
-    namespace eval Company {
+    model Company {
         table "companies"
     }
 
 Then, if you want to define relations this table has with other tables, do the following:
 
-    namespace eval Category {
+    model Category {
         table "categories"
         has games {Game category_id}
     }
@@ -21,7 +21,7 @@ There, a category has one or more games, which is mapped to the Game model using
 
 Sometimes you will want to indicate that this record is owned by another model, you can do that by specifying `belongs-to`.
 
-    namespace eval Rating {
+    model Rating {
         table "ratings"
         belongs-to game game_id {Game id}
     }
@@ -79,7 +79,7 @@ As you can see there's a simple SELECT-query builder that uses variable substitu
 
 Below you can see a more complete example of a `games` table that belongs to a category, a company, and has one or more ratings. Then, it also has a number of named, parameterized queries that yield one or more results.
 
-    namespace eval Game {
+    model Game {
         table "games"
         belongs-to category category_id {Category id}
         belongs-to company company_id {Company id}

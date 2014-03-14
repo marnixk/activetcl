@@ -1,6 +1,7 @@
 package provide activetcl 1.0
 
 package require mysqltcl
+package require log
 
 set pkg_dir [file dirname [info script]]
 
